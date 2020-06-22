@@ -1,2 +1,2 @@
-RewriteCond %{SERVER_PORT} 80 
-RewriteRule ^(.*)$ https://example.co/$1 [R,L]
+RewriteCond %{SERVER_PORT} 80
+RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
