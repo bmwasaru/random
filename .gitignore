@@ -1,2 +1,4 @@
 *.pem
 venv
+a.out
+*.pyc
