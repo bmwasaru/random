@@ -1,1 +1,1 @@
-for d in */; do wc -l $d*.csv; done
+for d in */; do cat $d*.csv | wc -l; done
