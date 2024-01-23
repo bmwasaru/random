@@ -2,3 +2,5 @@
 venv
 a.out
 *.pyc
+.idea/
+__pycache__/
