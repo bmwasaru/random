@@ -1,6 +1,10 @@
-import sqlachemy as sa
+from collections import OrderedDict
+
+import sqlalchemy as sa
 from sqlalchemy.sql import func
-from sqlachemy.dialects import postgresql as pg
+from sqlalchemy.dialects import postgresql as pg
+from sqlalchemy.sql.functions import current_timestamp
+from sqlalchemy.orm.exc import NoResultFound
 
 
 def pk(*foreign_key_column_names):
@@ -24,7 +28,7 @@ def pk(*foreign_key_column_names):
 def fk(column_name):
     """A foreign key with ONUPDATE CASCADE and ONDELETE CASCADE.
     Return a foreign key of type UUID for use in models.
-    The relationship CASCADEs on UPDATE and DELETE.
+    The relationship CASCADE on UPDATE and DELETE.
     :param column_name: the name of the referenced column
     :return: a SQLAlchemy Column for a UUID primary key.
     """
@@ -65,20 +69,6 @@ def json_column(column_name, *, default=None):
     )
 
 
-def last_update_time():
-    """A timestamp column set to CURRENT_TIMESTAMP on update.
-    Return a column containing the time that a record was last updated.
-    :return: a SQLAlchemy Column for a datetime with time zone auto-updating
-             column
-    """
-    return sa.Column(
-        pg.TIMESTAMP(timezone=True),
-        nullable=False,
-        server_default=current_timestamp(),
-        onupdate=current_timestamp(),
-    )
-
-
 def get_model(session, model_cls, model_id, exception=None):
     """Throw an error if session.query.get(model_id) returns None."""
     model = session.query(model_cls).get(model_id)
@@ -97,7 +87,7 @@ def _get_field(model, field_name):
         return getattr(model, field_name)
 
 
-def get_fields_subset(model: Base, fields):
+def get_fields_subset(model, fields):
     """Return the given fields for the model's dictionary representation."""
     return OrderedDict(
         (name, _get_field(model, name)) for name in fields if name
@@ -111,7 +101,7 @@ def column_search(query, *,
     TODO: document this
     :param query: a
     :param model_cls: aa
-    :param column: b
+    :param column_name: b
     :param search_term: c
     :param language: d
     :param regex: r
